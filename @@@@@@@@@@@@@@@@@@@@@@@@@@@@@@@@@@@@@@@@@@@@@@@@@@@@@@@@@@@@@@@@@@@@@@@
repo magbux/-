@@ -5,7 +5,6 @@ local Lighting = game:GetService("Lighting")
 local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer
 
--- Send Notification on Loaddddddydydy
 pcall(function()
 	StarterGui:SetCore("SendNotification", {
 		Title = "Notice";
@@ -25,7 +24,7 @@ local SearchCorner = Instance.new("UICorner")
 local ContentFrame = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
 
-ScreenGui.Name = "op yvh for speccy"
+ScreenGui.Name = "yvh script"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
@@ -118,13 +117,13 @@ end
 local FarmButton = createButton("Farm Coins", 1)
 local FarmWinsButton = createButton("Auto Farm Wins", 2)
 local KillAllButton = createButton("Kill All Players", 3)
-local CopyBlueBoxButton = createButton("Copy Blue Box", 4)
+local LoadBlueBoxButton = createButton("Load Blue Box Script", 4)
 local AnnoyButton = createButton("Annoy Server", 5)
 local RitualButton = createButton("Homer Ritual", 6)
 local PlatformButton = createButton("Platform", 7)
 local ESPButton = createButton("Wireframe ESP", 8)
 local FullbrightButton = createButton("Fullbright", 9)
-local NoclipButton = createButton("Noclip", 10)
+local TPToolButton = createButton("TP Tool", 10)
 local SpawnButton = createButton("TP to Spawn", 11)
 
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
@@ -260,18 +259,19 @@ KillAllButton.MouseButton1Click:Connect(function()
 	end
 end)
 
-CopyBlueBoxButton.MouseButton1Click:Connect(function()
-	local scriptToCopy = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/giobolqvi1/yvh-gui/refs/heads/main/HgCH4NvG62PSy86balVH7D12ZGQZ1D6gfi9n3mYv47R5W4xjny09AX39spW4YTkO.lua.txt"))()'
+LoadBlueBoxButton.MouseButton1Click:Connect(function()
+	local scriptUrl = "https://raw.githubusercontent.com/giobolqvi1/yvh-gui/refs/heads/main/HgCH4NvG62PSy86balVH7D12ZGQZ1D6gfi9n3mYv47R5W4xjny09AX39spW4YTkO.lua.txt"
+	local scriptCode = 'loadstring(game:HttpGet("' .. scriptUrl .. '"))()'
+	
 	if setclipboard then
-		setclipboard(scriptToCopy)
-		CopyBlueBoxButton.Text = "Copied!"
-		wait(1)
-		CopyBlueBoxButton.Text = "Copy Blue Box"
-	else
-		CopyBlueBoxButton.Text = "Not Supported"
-		wait(1)
-		CopyBlueBoxButton.Text = "Copy Blue Box"
+		setclipboard(scriptCode)
 	end
+	
+	LoadBlueBoxButton.Text = "Loaded!"
+	loadstring(game:HttpGet(scriptUrl))()
+	
+	wait(1)
+	LoadBlueBoxButton.Text = "Load Blue Box Script"
 end)
 
 local annoyServer = false
@@ -364,21 +364,45 @@ FullbrightButton.MouseButton1Click:Connect(function()
 	end
 end)
 
-SpawnButton.MouseButton1Click:Connect(function()
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-		LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1.57, 105.00, -22.51)
+local tpToolActive = false
+local tpToolInstance = nil
+
+TPToolButton.MouseButton1Click:Connect(function()
+	tpToolActive = not tpToolActive
+	if tpToolActive then
+		TPToolButton.Text = "TP Tool: ON"
+		TPToolButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+		
+		tpToolInstance = Instance.new("Tool")
+		tpToolInstance.Name = "TP Tool"
+		tpToolInstance.RequiresHandle = false
+		tpToolInstance.Parent = LocalPlayer.Backpack
+		
+		tpToolInstance.Activated:Connect(function()
+			local mouse = LocalPlayer:GetMouse()
+			if mouse and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+				LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
+			end
+		end)
+	else
+		TPToolButton.Text = "TP Tool"
+		TPToolButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+		if tpToolInstance then
+			tpToolInstance:Destroy()
+			tpToolInstance = nil
+		end
+		local existingTool = LocalPlayer.Backpack:FindFirstChild("TP Tool")
+		if existingTool then existingTool:Destroy() end
+		if LocalPlayer.Character then
+			local heldTool = LocalPlayer.Character:FindFirstChild("TP Tool")
+			if heldTool then heldTool:Destroy() end
+		end
 	end
 end)
 
-local noclip = false
-NoclipButton.MouseButton1Click:Connect(function()
-	noclip = not noclip
-	if noclip then
-		NoclipButton.Text = "Noclip: ON"
-		NoclipButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-	else
-		NoclipButton.Text = "Noclip"
-		NoclipButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SpawnButton.MouseButton1Click:Connect(function()
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1.57, 105.00, -22.51)
 	end
 end)
 
@@ -490,16 +514,6 @@ RunService.RenderStepped:Connect(function()
 				else
 					espBoxes[plr].Adornee = pChar
 				end
-			end
-		end
-	end
-end)
-
-RunService.Stepped:Connect(function()
-	if noclip and LocalPlayer.Character then
-		for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-			if part:IsA("BasePart") and part.CanCollide then
-				part.CanCollide = false
 			end
 		end
 	end
