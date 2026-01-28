@@ -5,11 +5,11 @@ local Lighting = game:GetService("Lighting")
 local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer
 
--- Send Notification on Load
+-- Send Notification on Loaddddddydydy
 pcall(function()
 	StarterGui:SetCore("SendNotification", {
 		Title = "Notice";
-		Text = "Kill All is intended to be used with Blue Box!";
+		Text = "script intended to be used with blue box script in the gui";
 		Duration = 10;
 	})
 end)
