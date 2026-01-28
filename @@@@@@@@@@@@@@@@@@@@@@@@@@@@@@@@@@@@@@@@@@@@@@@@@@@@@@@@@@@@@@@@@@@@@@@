@@ -3,6 +3,8 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
 local StarterGui = game:GetService("StarterGui")
+local VirtualUser = game:GetService("VirtualUser")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
 
 pcall(function()
@@ -10,6 +12,14 @@ pcall(function()
 		Title = "Notice";
 		Text = "use script with blue box if it doesnt load ur executor is weak";
 		Duration = 10;
+	})
+end)
+
+pcall(function()
+	StarterGui:SetCore("SendNotification", {
+		Title = "Anti-AFK";
+		Text = "3 Layers of Anti-AFK Enabled";
+		Duration = 5;
 	})
 end)
 
@@ -47,7 +57,7 @@ Title.BackgroundTransparency = 1.000
 Title.Position = UDim2.new(0, 12, 0, 8)
 Title.Size = UDim2.new(0.7, 0, 0, 30)
 Title.Font = Enum.Font.GothamBold
-Title.Text = "op yvh for speccy"
+Title.Text = "yvh script"
 Title.TextColor3 = Color3.fromRGB(220, 220, 220)
 Title.TextSize = 16.000
 Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -199,7 +209,7 @@ FarmButton.MouseButton1Click:Connect(function()
 end)
 
 local farmWins = false
-local winTarget = Vector3.new(13.04, 143.50, 58.25)
+local winTarget = Vector3.new(56.80, 141.50, -60.41)
 
 FarmWinsButton.MouseButton1Click:Connect(function()
 	farmWins = not farmWins
@@ -516,5 +526,27 @@ RunService.RenderStepped:Connect(function()
 				end
 			end
 		end
+	end
+end)
+
+LocalPlayer.Idled:Connect(function()
+	VirtualUser:CaptureController()
+	VirtualUser:ClickButton2(Vector2.new())
+end)
+
+task.spawn(function()
+	while true do
+		task.wait(600)
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.RightControl, false, game)
+		task.wait(0.1)
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.RightControl, false, game)
+	end
+end)
+
+task.spawn(function()
+	while true do
+		task.wait(300)
+		VirtualUser:CaptureController()
+		VirtualUser:ClickButton2(Vector2.new())
 	end
 end)
