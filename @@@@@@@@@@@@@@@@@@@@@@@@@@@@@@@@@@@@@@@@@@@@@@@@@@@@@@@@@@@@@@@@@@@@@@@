@@ -2,7 +2,17 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
+local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer
+
+-- Send Notification on Load
+pcall(function()
+	StarterGui:SetCore("SendNotification", {
+		Title = "Notice";
+		Text = "Kill All is intended to be used with Blue Box!";
+		Duration = 10;
+	})
+end)
 
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
@@ -22,8 +32,8 @@ ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MainFrame.Position = UDim2.new(0.5, -110, 0.5, -225)
-MainFrame.Size = UDim2.new(0, 220, 0, 450)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -200)
+MainFrame.Size = UDim2.new(0, 220, 0, 400)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.ClipsDescendants = true
@@ -107,17 +117,15 @@ end
 
 local FarmButton = createButton("Farm Coins", 1)
 local FarmWinsButton = createButton("Auto Farm Wins", 2)
-local KillAllButton = createButton("Kill All Bart (TP)", 3)
-local BringBartsButton = createButton("Kill Barts V2 (Bring)", 4)
-local GotoHomerButton = createButton("Goto Random Homer", 5)
-local GotoBartButton = createButton("Goto Random Bart", 6)
-local AnnoyButton = createButton("Annoy Server", 7)
-local RitualButton = createButton("Homer Ritual", 8)
-local PlatformButton = createButton("Platform", 9)
-local ESPButton = createButton("Wireframe ESP", 10)
-local FullbrightButton = createButton("Fullbright", 11)
-local NoclipButton = createButton("Noclip", 12)
-local SpawnButton = createButton("TP to Spawn", 13)
+local KillAllButton = createButton("Kill All Players", 3)
+local CopyBlueBoxButton = createButton("Copy Blue Box", 4)
+local AnnoyButton = createButton("Annoy Server", 5)
+local RitualButton = createButton("Homer Ritual", 6)
+local PlatformButton = createButton("Platform", 7)
+local ESPButton = createButton("Wireframe ESP", 8)
+local FullbrightButton = createButton("Fullbright", 9)
+local NoclipButton = createButton("Noclip", 10)
+local SpawnButton = createButton("TP to Spawn", 11)
 
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
 	local text = SearchBar.Text:lower()
@@ -192,7 +200,7 @@ FarmButton.MouseButton1Click:Connect(function()
 end)
 
 local farmWins = false
-local winTarget = Vector3.new(-1.57, 105.00, -22.51)
+local winTarget = Vector3.new(-16.94, 103.50, -59.76)
 
 FarmWinsButton.MouseButton1Click:Connect(function()
 	farmWins = not farmWins
@@ -217,83 +225,60 @@ local killAllActive = false
 KillAllButton.MouseButton1Click:Connect(function()
 	killAllActive = not killAllActive
 	if killAllActive then
-		KillAllButton.Text = "Killing Bart..."
+		KillAllButton.Text = "Killing Players..."
 		KillAllButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+		
 		task.spawn(function()
 			while killAllActive do
 				local originalPos = nil
 				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
 					originalPos = LocalPlayer.Character.HumanoidRootPart.CFrame
 				end
-				local barts = {}
-				for _, v in pairs(workspace:GetDescendants()) do
-					if v.Name == "Bart" and v:IsA("Model") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-						table.insert(barts, v)
-					end
-				end
-				for _, bart in pairs(barts) do
+
+				local potentialTargets = Players:GetPlayers()
+				
+				for _, plr in pairs(potentialTargets) do
 					if not killAllActive then break end
-					if bart.Parent and bart:FindFirstChild("Humanoid") and bart.Humanoid.Health > 0 and LocalPlayer.Character then
-						LocalPlayer.Character.HumanoidRootPart.CFrame = bart.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2)
-						local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
-						if tool then
-							tool.Parent = LocalPlayer.Character
-							tool:Activate()
+					if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("HumanoidRootPart") then
+						if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+							LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
+							local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
+							if tool then
+								tool.Parent = LocalPlayer.Character
+								tool:Activate()
+							end
+							task.wait(0.15)
 						end
-						task.wait(0.2)
 					end
 				end
-				if originalPos and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-					LocalPlayer.Character.HumanoidRootPart.CFrame = originalPos
-				end
-				task.wait(1)
+				task.wait()
 			end
 		end)
 	else
-		KillAllButton.Text = "Kill All Bart (TP)"
+		KillAllButton.Text = "Kill All Players"
 		KillAllButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 	end
 end)
 
-local bringBarts = false
-BringBartsButton.MouseButton1Click:Connect(function()
-	bringBarts = not bringBarts
-	if bringBarts then
-		BringBartsButton.Text = "Bringing Barts..."
-		BringBartsButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+CopyBlueBoxButton.MouseButton1Click:Connect(function()
+	local scriptToCopy = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/giobolqvi1/yvh-gui/refs/heads/main/HgCH4NvG62PSy86balVH7D12ZGQZ1D6gfi9n3mYv47R5W4xjny09AX39spW4YTkO.lua.txt"))()'
+	if setclipboard then
+		setclipboard(scriptToCopy)
+		CopyBlueBoxButton.Text = "Copied!"
+		wait(1)
+		CopyBlueBoxButton.Text = "Copy Blue Box"
 	else
-		BringBartsButton.Text = "Kill Barts V2 (Bring)"
-		BringBartsButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	end
-end)
-
-GotoHomerButton.MouseButton1Click:Connect(function()
-	local targets = {}
-	for _, v in pairs(workspace:GetDescendants()) do
-		if v.Name == "Homer" and v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") then
-			table.insert(targets, v)
-		end
-	end
-	if #targets > 0 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-		local randomTarget = targets[math.random(1, #targets)]
-		LocalPlayer.Character.HumanoidRootPart.CFrame = randomTarget.HumanoidRootPart.CFrame
-	end
-end)
-
-GotoBartButton.MouseButton1Click:Connect(function()
-	local targets = {}
-	for _, v in pairs(workspace:GetDescendants()) do
-		if v.Name == "Bart" and v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") then
-			table.insert(targets, v)
-		end
-	end
-	if #targets > 0 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-		local randomTarget = targets[math.random(1, #targets)]
-		LocalPlayer.Character.HumanoidRootPart.CFrame = randomTarget.HumanoidRootPart.CFrame
+		CopyBlueBoxButton.Text = "Not Supported"
+		wait(1)
+		CopyBlueBoxButton.Text = "Copy Blue Box"
 	end
 end)
 
 local annoyServer = false
+local annoyPlatform = nil
+local nextAnnoyTime = 0
+local currentAnnoyTarget = nil
+
 AnnoyButton.MouseButton1Click:Connect(function()
 	annoyServer = not annoyServer
 	if annoyServer then
@@ -302,6 +287,11 @@ AnnoyButton.MouseButton1Click:Connect(function()
 	else
 		AnnoyButton.Text = "Annoy Server"
 		AnnoyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+		if annoyPlatform then
+			annoyPlatform:Destroy()
+			annoyPlatform = nil
+		end
+		currentAnnoyTarget = nil
 	end
 end)
 
@@ -422,30 +412,38 @@ RunService.RenderStepped:Connect(function()
 		end
 	end
 
-	if bringBarts and root then
-		for _, v in pairs(workspace:GetDescendants()) do
-			if v.Name == "Bart" and v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
-				if v.Humanoid.Health > 0 then
-					v.HumanoidRootPart.CFrame = root.CFrame * CFrame.new(0, 0, -5)
-					v.HumanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+	if annoyServer and root and hum then
+		if not annoyPlatform or not annoyPlatform.Parent then
+			annoyPlatform = Instance.new("Part")
+			annoyPlatform.Name = "AnnoyPlatform"
+			annoyPlatform.Size = Vector3.new(10, 1, 10)
+			annoyPlatform.Anchored = true
+			annoyPlatform.Transparency = 1
+			annoyPlatform.Parent = workspace
+		end
+
+		if tick() >= nextAnnoyTime then
+			nextAnnoyTime = tick() + 2
+			local players = Players:GetPlayers()
+			local validTargets = {}
+			for _, p in pairs(players) do
+				if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+					table.insert(validTargets, p)
 				end
 			end
-		end
-	end
-
-	if annoyServer and root and hum then
-		local players = Players:GetPlayers()
-		local validTargets = {}
-		for _, p in pairs(players) do
-			if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-				table.insert(validTargets, p)
+			if #validTargets > 0 then
+				currentAnnoyTarget = validTargets[math.random(1, #validTargets)]
+			else
+				currentAnnoyTarget = nil
 			end
 		end
-		
-		if #validTargets > 0 then
-			local target = validTargets[math.random(1, #validTargets)]
-			root.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 25, 0)
+
+		if currentAnnoyTarget and currentAnnoyTarget.Character and currentAnnoyTarget.Character:FindFirstChild("HumanoidRootPart") then
+			local targetCF = currentAnnoyTarget.Character.HumanoidRootPart.CFrame
+			local myCF = targetCF * CFrame.new(0, 19, 0)
+			root.CFrame = myCF
 			root.AssemblyLinearVelocity = Vector3.zero
+			annoyPlatform.CFrame = myCF * CFrame.new(0, -3.5, 0)
 		end
 		
 		local pizza = char:FindFirstChild("Pizza") or LocalPlayer.Backpack:FindFirstChild("Pizza")
@@ -456,6 +454,9 @@ RunService.RenderStepped:Connect(function()
 				hum:EquipTool(pizza)
 			end
 		end
+	elseif not annoyServer and annoyPlatform then
+		annoyPlatform:Destroy()
+		annoyPlatform = nil
 	end
 	
 	if platformActive and root then
