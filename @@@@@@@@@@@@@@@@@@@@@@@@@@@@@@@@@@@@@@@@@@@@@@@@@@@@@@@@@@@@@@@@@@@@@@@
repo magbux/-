@@ -8,7 +8,7 @@ local LocalPlayer = Players.LocalPlayer
 pcall(function()
 	StarterGui:SetCore("SendNotification", {
 		Title = "Notice";
-		Text = "script intended to be used with blue box script in the gui";
+		Text = "use script with blue box if it doesnt load ur executor is weak";
 		Duration = 10;
 	})
 end)
@@ -199,7 +199,7 @@ FarmButton.MouseButton1Click:Connect(function()
 end)
 
 local farmWins = false
-local winTarget = Vector3.new(-16.94, 103.50, -59.76)
+local winTarget = Vector3.new(13.04, 143.50, 58.25)
 
 FarmWinsButton.MouseButton1Click:Connect(function()
 	farmWins = not farmWins
